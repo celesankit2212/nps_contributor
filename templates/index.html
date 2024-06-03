@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPS Input</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>NPS Input</h1>
+    <form action="{{ url_for('nps_form') }}" method="post">
+        <label for="team_name">Team Name:</label>
+        <input type="text" id="team_name" name="team_name" list="team_names" required>
+        <datalist id="team_names">
+            {% for team in teams %}
+                <option value="{{ team }}"></option>
+            {% endfor %}
+        </datalist>
+        <br>
+        <label for="team_members">Team Members (comma separated):</label>
+        <input type="text" id="team_members" name="team_members" required>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        $(document).ready(function(){
+            $('#team_name').on('change', function(){
+                var teamName = $(this).val();
+                $.ajax({
+                    url: "{{ url_for('get_team_members') }}",
+                    method: "POST",
+                    data: { team_name: teamName },
+                    success: function(data){
+                        $('#team_members').val(data.join(', '));
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

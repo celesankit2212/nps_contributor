@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPS Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>NPS score for {{ team_name }} on the basis of contribution and work efficiency</h1>
+    <form action="{{ url_for('submit_nps') }}" method="post">
+        <input type="hidden" name="team_name" value="{{ team_name }}">
+        {% for member in team_members %}
+            <p>
+                How much would you like to rate {{ member }} on the basis of work effort and efficiency on a scale of 0-10?
+                <br>
+                <div class="radio-container">
+                    {% for i in range(11) %}
+                        <input type="radio" id="score_{{ member }}_{{ i }}" name="score_{{ member }}" value="{{ i }}" required>
+                        <label for="score_{{ member }}_{{ i }}" class="radio-label" data-tooltip="{{ tooltip(i) }}">{{ i }}</label>
+                    {% endfor %}
+                </div>
+            </p>
+        {% endfor %}
+        <br>
+        <label for="given_by">Your Name:</label>
+        <input type="text" id="given_by" name="given_by" required>
+        <br>
+        <label for="given_by_email">Your Official Email:</label>
+        <input type="email" id="given_by_email" name="given_by_email" required>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.radio-container').forEach(function(container) {
+                container.addEventListener('change', function(e) {
+                    if (e.target.type === 'radio') {
+                        let selectedValue = parseInt(e.target.value);
+                        let radios = container.querySelectorAll('input[type="radio"]');
+                        radios.forEach(function(radio, index) {
+                            radio.checked = index <= selectedValue;
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
