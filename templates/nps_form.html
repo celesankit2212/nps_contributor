@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NPS Form</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>NPS score for {{ team_name }} on the basis of contribution and work efficiency</h1>
@@ -32,6 +33,10 @@
         <button type="submit">Submit</button>
     </form>
 
+    {% if not request.args.get('shortened') %}
+        <button id="shorten-url">Shorten URL</button>
+    {% endif %}
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.radio-container').forEach(function(container) {
@@ -42,6 +47,19 @@
                         radios.forEach(function(radio, index) {
                             radio.checked = index <= selectedValue;
                         });
+                    }
+                });
+            });
+
+            document.getElementById('shorten-url').addEventListener('click', function() {
+                var currentUrl = window.location.href;
+                $.ajax({
+                    url: "{{ url_for('shorten_url') }}",
+                    method: "POST",
+                    data: { url: currentUrl },
+                    success: function(data) {
+                        var shortUrl = data.short_url;
+                        window.location.href = shortUrl + "?shortened=true";
                     }
                 });
             });

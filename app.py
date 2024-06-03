@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 import json
 import csv
 import os
+import requests
 
 app = Flask(__name__)
 
@@ -67,6 +68,13 @@ def submit_nps():
             writer.writerow([team_name, member, score, given_by, given_by_email])
 
     return 'NPS scores submitted successfully!'
+
+@app.route('/shorten_url', methods=['POST'])
+def shorten_url():
+    original_url = request.form['url']
+    response = requests.get(f'http://tinyurl.com/api-create.php?url={original_url}')
+    short_url = response.text
+    return jsonify({'short_url': short_url})
 
 if __name__ == '__main__':
     app.run(debug=True)
