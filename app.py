@@ -5,9 +5,9 @@ import os
 
 app = Flask(__name__)
 
-# Load team data from JSON file
+# Load data from JSON file
 with open('teams.json') as f:
-    teams_data = json.load(f)
+    data = json.load(f)
 
 def tooltip(score):
     if score <= 2:
@@ -23,12 +23,20 @@ app.jinja_env.globals.update(tooltip=tooltip)
 
 @app.route('/')
 def index():
-    return render_template('index.html', teams=teams_data.keys())
+    departments = data.keys()
+    return render_template('index.html', departments=departments)
+
+@app.route('/get_teams', methods=['POST'])
+def get_teams():
+    department = request.form['department']
+    teams = data.get(department, {}).keys()
+    return jsonify(list(teams))
 
 @app.route('/get_team_members', methods=['POST'])
 def get_team_members():
+    department = request.form['department']
     team_name = request.form['team_name']
-    team_members = teams_data.get(team_name, [])
+    team_members = data.get(department, {}).get(team_name, [])
     return jsonify(team_members)
 
 @app.route('/nps_form', methods=['POST'])

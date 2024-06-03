@@ -10,32 +10,65 @@
 <body>
     <h1>NPS Input</h1>
     <form action="{{ url_for('nps_form') }}" method="post">
-        <label for="team_name">Team Name:</label>
-        <input type="text" id="team_name" name="team_name" list="team_names" required>
-        <datalist id="team_names">
-            {% for team in teams %}
-                <option value="{{ team }}"></option>
+        <label for="department">Department:</label>
+        <select id="department" name="department" required>
+            <option value="">Select Department</option>
+            {% for department in departments %}
+                <option value="{{ department }}">{{ department }}</option>
             {% endfor %}
-        </datalist>
+        </select>
+        <br>
+        <label for="team_name">Team Name:</label>
+        <select id="team_name" name="team_name" required>
+            <option value="">Select Team</option>
+        </select>
         <br>
         <label for="team_members">Team Members (comma separated):</label>
-        <input type="text" id="team_members" name="team_members" required>
+        <input type="text" id="team_members" name="team_members" required readonly>
         <br>
         <button type="submit">Submit</button>
     </form>
 
     <script>
         $(document).ready(function(){
+            $('#department').on('change', function(){
+                var department = $(this).val();
+                if (department) {
+                    $.ajax({
+                        url: "{{ url_for('get_teams') }}",
+                        method: "POST",
+                        data: { department: department },
+                        success: function(data){
+                            var teamSelect = $('#team_name');
+                            teamSelect.empty();
+                            teamSelect.append('<option value="">Select Team</option>');
+                            data.forEach(function(team) {
+                                teamSelect.append('<option value="' + team + '">' + team + '</option>');
+                            });
+                            $('#team_members').val('');
+                        }
+                    });
+                } else {
+                    $('#team_name').empty().append('<option value="">Select Team</option>');
+                    $('#team_members').val('');
+                }
+            });
+
             $('#team_name').on('change', function(){
+                var department = $('#department').val();
                 var teamName = $(this).val();
-                $.ajax({
-                    url: "{{ url_for('get_team_members') }}",
-                    method: "POST",
-                    data: { team_name: teamName },
-                    success: function(data){
-                        $('#team_members').val(data.join(', '));
-                    }
-                });
+                if (teamName) {
+                    $.ajax({
+                        url: "{{ url_for('get_team_members') }}",
+                        method: "POST",
+                        data: { department: department, team_name: teamName },
+                        success: function(data){
+                            $('#team_members').val(data.join(', '));
+                        }
+                    });
+                } else {
+                    $('#team_members').val('');
+                }
             });
         });
     </script>

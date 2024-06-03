@@ -1,4 +1,17 @@
 {
-  "Netskrt QA": ["Uday", "Sreeni", "Ankit"],
-  "Travis CI": ["Arthana", "Pankaj", "Himanshu", "Anchal", "Ramesh"]
+  "Department QA": {
+    "Netskrt QA": [
+      "Uday",
+      "Sreeni",
+      "Ankit"
+    ],
+    "Travis CI": [
+      "Arthana",
+      "Pankaj",
+      "Himanshu",
+      "Anchal",
+      "Ramesh"
+    ]
+  },
+  "Department Development": {}
 }
